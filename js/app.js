@@ -1,30 +1,41 @@
 const submitBtn = document.getElementById('submit-btn');
 
-submitBtn.addEventListener('click', async()=> {
+submitBtn.addEventListener('click', async () => {
     const searchInput = document.getElementById('search-input').value;
     const url = `https://api.lyrics.ovh/suggest/${searchInput}`;
     document.getElementById("div-container").innerHTML = '';
     document.getElementById('lyrics').innerHTML = '';
+    document.getElementById('error-message').innerText = '';
     if (searchInput) {
-        const res = await fetch(url);
-        const data = await res.json();
-        displaySongs(data.data, searchInput);
-        
-        document.getElementById('error-container').innerHTML = '';
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            displaySongs(data.data, searchInput);
+            document.getElementById('error-message').innerHTML = '';
+        }
+        catch (error) {
+            displayError('Ooops! Something went wrong! please try again later');
+            document.getElementById('error-container').innerHTML = '';
+            document.getElementById('search-input').value = '';
+
+        }
     }
 
     //manual load data
     // if (searchInput) {
     //     fetch(url)
-    //     .then(res => res.json())
-    //     .then(data => displaySongs(data.data, searchInput))      
+    //         .then(res => res.json())
+    //         .then(data => displaySongs(data.data, searchInput))
+    //         .catch(error => displayError(error))
     //     document.getElementById('error-container').innerHTML = '';
     // }
-    else{
-        const errorDiv = document.getElementById('error-container');
-        errorDiv.innerHTML = `<h3>You have entered empty search</h3>`
+
+    else {
+        // const errorDiv = document.getElementById('error-container');
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.innerText = `You have entered empty search`;
     }
-    
+
 })
 
 const displaySongs = (song, searchInput) => {
@@ -67,13 +78,24 @@ const getLyrics = async (artist, title) => {
     //         displayLyrics(data.lyrics);
 
     //     })
-    const res = await fetch(url);
-    const data = await res.json();
-    displayLyrics(data.lyrics);
-
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        displayLyrics(data.lyrics);
+    }
+    catch (error) {
+        console.log({ error })
+        displayError('Sorry! i failed to load data. Please try again later');
+    }
 }
 
 const displayLyrics = lyrics => {
     const songLyric = document.getElementById('lyrics');
     songLyric.innerText = lyrics;
+}
+
+
+const displayError = error => {
+    const errorMessage = document.getElementById('error-message');
+    errorMessage.innerText = error;
 }
