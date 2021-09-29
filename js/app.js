@@ -1,16 +1,25 @@
 const submitBtn = document.getElementById('submit-btn');
 
-submitBtn.addEventListener('click', function() {
+submitBtn.addEventListener('click', async()=> {
     const searchInput = document.getElementById('search-input').value;
     const url = `https://api.lyrics.ovh/suggest/${searchInput}`;
     document.getElementById("div-container").innerHTML = '';
     document.getElementById('lyrics').innerHTML = '';
     if (searchInput) {
-        fetch(url)
-        .then(res => res.json())
-        .then(data => displaySongs(data.data, searchInput))
+        const res = await fetch(url);
+        const data = await res.json();
+        displaySongs(data.data, searchInput);
+        
         document.getElementById('error-container').innerHTML = '';
     }
+
+    //manual load data
+    // if (searchInput) {
+    //     fetch(url)
+    //     .then(res => res.json())
+    //     .then(data => displaySongs(data.data, searchInput))      
+    //     document.getElementById('error-container').innerHTML = '';
+    // }
     else{
         const errorDiv = document.getElementById('error-container');
         errorDiv.innerHTML = `<h3>You have entered empty search</h3>`
@@ -45,19 +54,22 @@ const displaySongs = (song, searchInput) => {
 
 }
 
-const getLyrics = (artist, title) => {
+const getLyrics = async (artist, title) => {
     document.getElementById('lyrics').style.display = 'block';
     const artistName = artist;
     console.log({ artistName });
     const songTitle = title;
     const url = `https://api.lyrics.ovh/v1/${artistName}/${songTitle}`;
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            console.log(data)
-            displayLyrics(data.lyrics);
+    // fetch(url)
+    //     .then(res => res.json())
+    //     .then(data => {
+    //         console.log(data)
+    //         displayLyrics(data.lyrics);
 
-        })
+    //     })
+    const res = await fetch(url);
+    const data = await res.json();
+    displayLyrics(data.lyrics);
 
 }
 
